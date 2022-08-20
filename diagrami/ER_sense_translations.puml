@@ -1,0 +1,124 @@
+@startuml ER
+
+skinparam class {
+  backgroundColor white
+  backgroundColor<<sense>> #e8f5fc
+  backgroundColor<<sense_frame>> #f9ecf9
+  backgroundColor<<lexical_unit>> #f9ffe6
+  backgroundColor<<syntactic_structure>> #f9f2ec
+  backgroundColor<<morphological>> #e6ffe6
+  backgroundColor<<example>> #ffffe6
+  backgroundColor<<feature>> #f2f2f2
+  backgroundColor<<multilingual>> #ffe6e6
+  backgroundColor<<connections>> #fff0e6
+  borderColor black
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+  arrowColor black
+}
+
+skinparam rectangle {
+  backgroundColor white
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+}
+
+skinparam backgroundcolor transparent
+'left to right direction
+hide circle
+hide stereotype
+'hide members
+
+
+rectangle "<color:#b30000>sense translations" <<multilingual>> {
+  entity "<U+0020>**sense_example_translation** " as sense_example_translation <<multilingual>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_example_id: INT <<FK>>
+    <color:#gray>translation_id: INT <<FK>>
+  }
+
+  entity "**translation**" as translation <<multilingual>> {
+    id: INT <<PK>>
+    <color:#gray>language_id: INT <<FK>>
+    --
+    translation: VARCHAR(45)
+  }
+
+  entity "**language**" as language <<multilingual>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "**explanation**" as explanation <<multilingual>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>translation_id: INT <<FK>>
+    <color:#gray>language_id: INT: <<FK>>
+    --
+    explanation: VARCHAR(45)
+  }
+
+  entity "**external_source**" as external_source <<multilingual>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+    url_template: VARCHAR(45)
+  }
+
+  entity "<U+0020>**translation_external_source** " as translation_external_source <<multilingual>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>translation_id: INT <<FK>>
+    <color:#gray>external_source_id: INT <<FK>>
+    --
+    external_source_key: VARCHAR(45)
+  }
+
+  entity "**sense_translation**" as sense_translation <<multilingual>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_id: INT <<FK>>
+    <color:#gray>translation_id: INT <<FK>>
+  }
+
+  sense_example_translation }|-right-|| translation
+  translation }|-down-|| language
+  explanation }|-left-|| translation
+  explanation }|--|| language
+  translation_external_source }|-left-|| external_source
+  translation_external_source }|--|| translation
+  sense_translation }|--|| translation
+}
+
+entity "<U+0020>**sense** " as sense <<sense>> {
+  id: INT <<PK>>
+  <color:#gray>lexical_unit_id: INT <<FK>>
+  --
+  position: INT
+}
+
+entity "<U+0020>**sense_example** " as sense_example <<example>> {
+  id: INT <<PK>>
+  <color:#gray>sense_id: INT <<FK>>
+  <color:#gray>example_id: INT <<FK>>
+}
+
+sense_translation }|.right.|| sense
+
+sense_example }|.up.|| sense
+
+sense_example_translation }|.right.|| sense_example
+
+@enduml

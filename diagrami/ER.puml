@@ -1,0 +1,673 @@
+@startuml ER
+
+skinparam class {
+  backgroundColor white
+  backgroundColor<<sense>> #e8f5fc
+  backgroundColor<<sense_frame>> #f9ecf9
+  backgroundColor<<lexical_unit>> #f9ffe6
+  backgroundColor<<syntactic_structure>> #f9f2ec
+  backgroundColor<<morphological>> #e6ffe6
+  backgroundColor<<example>> #ffffe6
+  backgroundColor<<feature>> #f2f2f2
+  backgroundColor<<multilingual>> #ffe6e6
+  backgroundColor<<connections>> #fff0e6
+  borderColor black
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+  arrowColor black
+}
+
+skinparam rectangle {
+  backgroundColor white
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+}
+
+skinparam backgroundcolor transparent
+'left to right direction
+hide circle
+hide stereotype
+'hide members
+
+
+rectangle "<color:#d477d4>sense frames" <<sense_frame>> {
+
+  entity "<U+0020>**sense_frame_component_subrole** " as sense_frame_component_subrole <<sense_frame>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**frame_component_type** " as frame_component_type <<sense_frame>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**sense_frame** " as sense_frame <<sense_frame>> {
+    id: INT <<PK>>
+    <color:#gray>sense_id: INT <<FK>>
+    <color:#gray>frame_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**frame_component** " as frame_component <<sense_frame>> {
+    id: INT <<PK>>
+    <color:#gray>frame_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**sense_frame_component** " as sense_frame_component <<sense_frame>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_frame_id: INT <<FK>>
+    <color:#gray>component_id: INT <<FK>>
+    <color:#gray>subrole_id: INT <<FK>>
+  }
+
+  entity "<color:red><U+0020>**frame** " as frame <<sense_frame>> {
+    id: INT <<PK>>
+  }
+
+  sense_frame_component }|--|| sense_frame_component_subrole
+  sense_frame_component  }|--|| frame_component
+  sense_frame_component }|--|| sense_frame
+
+  frame_component }|--|| frame_component_type
+  frame_component }|--|| frame
+  
+  sense_frame }|--|| frame
+}
+
+rectangle "<color:#5FB8EC>sense" <<sense>> {
+
+  entity "<U+0020>**sense_part_role** " as sense_part_role <<sense>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**sense_part_type** " as sense_part_type <<sense>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**sense_part** " as sense_part <<sense>> {
+    id: INT <<PK>>
+    <color:#gray>sense_id: INT <<FK>>
+    <color:#gray>lexical_unit_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+    <color:#gray>role_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**sense_relation_type** " as sense_relation_type <<sense>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "**sense_relation**" as sense_relation <<sense>> {
+    id: INT <<PK>>
+    <color:#gray>from_sense_id: INT <<FK>>
+    <color:#gray>to_sense_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**sense_candidate** " as sense_candidate <<sense>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>potential_sense_id: INT <<FK>>
+    <color:#gray>candidate_sense_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**definition_type** " as definition_type <<sense>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**definition** " as definition <<sense>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+    --
+    description: TEXT
+  }
+
+  entity "<U+0020>**sense** " as sense <<sense>> {
+    id: INT <<PK>>
+    <color:#gray>lexical_unit_id: INT <<FK>>
+    --
+    position: INT
+  }
+
+  entity "<U+0020>**sense_measure** " as sense_measure <<sense>> {
+    id: INT <<PK>>
+    <color:#gray>sense_id: INT <<FK>>
+    <color:#gray>corpus_id: INT <<FK>>
+    <color:#gray>measure_id: INT <<FK>>
+    --
+    value: FLOAT
+  }
+
+  sense_part }|-up-o| sense_part_role
+  sense_part }|-up-|| sense_part_type
+  sense_part }|--|| sense
+
+  sense_relation }|-up-|| sense_relation_type
+  sense_relation }|--|| sense
+  sense_relation }|--|| sense
+
+  sense_candidate }|--|| sense
+  sense_candidate }|--|| sense
+
+  definition }|--|| sense
+  definition }|-up-|| definition_type
+
+  sense_measure }|-left-|| sense
+
+}
+
+rectangle "<color:#9ccc00>lexical unit" <<lexical_unit>> {
+
+  entity "<U+0020>**lexical_unit** " as lexical_unit <<lexical_unit>> {
+    <color:#red>id: INT <<PK>>
+    <color:#gray>syntactic_structure_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**lexical_unit_type** " as lexical_unit_type <<lexical_unit>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**lexical_unit_part** " as lexical_unit_part <<lexical_unit>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>lexical_unit_id: INT <<FK>>
+    <color:#gray>structure_component_id: INT <<FK>>
+    <color:#gray>form_encoding_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**lexicon** " as lexicon <<lexical_unit>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(64)
+    version: VARCHAR(64)
+  }
+
+  entity "<U+0020>**lexicon_lexical_unit** " as lexicon_lexical_unit <<lexical_unit>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>lexicon_id: INT <<FK>>
+    <color:#gray>lexical_unit_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**lexical_unit_relation_type** " as lexical_unit_relation_type <<lexical_unit>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**lexical_unit_relation** " as lexical_unit_relation <<lexical_unit>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>from_lexical_unit_id: INT <<FK>>
+    <color:#gray>to_lexical_unit_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+  
+  lexical_unit_part }|--|| lexical_unit
+
+  lexical_unit }|-right-|| lexical_unit_type
+
+  lexicon_lexical_unit }|-up-|| lexicon
+  lexicon_lexical_unit }|--|| lexical_unit
+
+  lexical_unit_relation }|-up-|| lexical_unit_relation_type
+  lexical_unit_relation }|--|| lexical_unit
+  lexical_unit_relation }|--|| lexical_unit
+
+}
+
+rectangle "<color:#cccc00>corpus examples" <<example>> {
+  
+  entity "<U+0020>**corpus** " as corpus <<example>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(64)
+    version: VARCHAR(45)
+  }
+
+  entity "<U+0020>**example_relation_type** " as example_relation_type <<example>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<color:red><U+0020>**example** " as example <<example>> {
+    id: INT <<PK>>
+    <color:#gray>corpus_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**example_relation** " as example_relation <<example>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>from_example_id: INT <<FK>>
+    <color:#gray>to_example_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**example_sentence** " as example_sentence <<example>> {
+    id: INT <<PK>>
+    <color:#gray>example_id: INT <<FK>>
+    --
+    <color:#red>corpus_sentence_id: VARCHAR(45)
+    position: INT
+  }
+
+  entity "<U+0020>**sense_example** " as sense_example <<example>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_id: INT <<FK>>
+    <color:#gray>example_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**sense_example_token** " as sense_example_token <<example>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_part_id: INT <<FK>>
+    <color:#gray>sense_example_id: INT <<FK>>
+    --
+    position: INT
+  }
+
+  example }|--|| corpus
+
+  example_relation }|--|| example_relation_type
+  example_relation }|--|| example
+  example_relation }|--|| example
+
+  example_sentence }|--|| example
+
+  sense_example }|--|| example
+
+  sense_example_token }|-up-|| sense_example
+
+}
+
+entity "<U+0020>**object_feature** " as object_feature {
+    id: INT <<PK>>
+    <color:#gray>value_id: INT <<FK>>
+    --
+    <color:#red>object_id: INT
+    <color:#red>content_type_id: INT
+  }
+
+
+rectangle "<color:#737373>generic features" <<feature>> {
+
+  entity "<U+0020>**measure** " as measure <<feature>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**feature_category** " as feature_category <<feature>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**feature** " as feature <<feature>> {
+    id: INT <<PK>>
+    <color:#gray>category_id: INT <<FK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**feature_value** " as feature_value <<feature>> {
+    id: INT <<PK>>
+    <color:#gray>feature_id: INT <<FK>>
+    --
+    value: VARCHAR(45)
+  }
+
+  entity "<U+0020>**feature_value_relation_type** " as feature_value_relation_type <<feature>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**feature_value_relation** " as feature_value_relation <<feature>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>from_value_id: INT <<FK>>
+    <color:#gray>to_value_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  feature }|-right-|| feature_category
+
+  feature_value }|--|| feature
+
+  object_feature }|.up.|| feature_value
+
+  feature_value_relation }|--|| feature_value_relation_type
+  feature_value_relation }|--|| feature_value
+  feature_value_relation }|--|| feature_value
+
+}
+
+rectangle "<color:#996633>syntactic structure" <<syntactic_structure>> {
+  entity "<color:red><U+0020>**syntactic_structure** " as syntactic_structure <<syntactic_structure>> {
+    id: INT <<PK>>
+  }
+
+  entity "<U+0020>**structure_component** " as structure_component <<syntactic_structure>> {
+    id: INT <<PK>>
+    <color:#gray>structure_id: INT <<FK>>
+    --
+    index: INT
+  }
+
+  entity "<U+0020>**structure_relation_type** " as structure_relation_type <<syntactic_structure>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**structure_relation** " as structure_relation <<syntactic_structure>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>from_structure_id: INT <<FK>>
+    <color:#gray>to_structure_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  structure_component }|--|| syntactic_structure
+
+  structure_relation }|--|| structure_relation_type
+  structure_relation }|--|| syntactic_structure
+  structure_relation }|--|| syntactic_structure
+}
+
+rectangle "<color:#00b300>word forms" <<morphological>> {
+  entity "<U+0020>**form_encoding** " as form_encoding <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+    <color:#gray>script_id: INT <<FK>>
+    --
+    text: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_encoding_script** " as form_encoding_script <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_pattern_system** " as form_pattern_system <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_pattern** " as form_pattern <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>system_id: INT <<FK>>
+    --
+    code: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_representation_pattern** " as form_representation_pattern <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+    <color:#gray>pattern_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**form_representation_norm_status** " as form_representation_norm_status <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_representation_relation_type** " as form_representation_relation_type <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_representation** " as form_representation <<morphological>> {
+    id: INT <<PK>>
+    <color:#gray>word_form_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+    <color:#gray>norm_status_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**form_representation_relation** " as form_representation_relation <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+    <color:#gray>to_representation_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**form_representation_type** " as form_representation_type <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+    subtype: VARCHAR(45)
+  }
+
+  entity "<U+0020>**category** " as category <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(64)
+  }
+
+  entity "<U+0020>**lexeme** " as lexeme <<morphological>> {
+    id: INT <<PK>>
+    <color:#gray>category_id: INT <<FK>>
+    --
+    lemma: VARCHAR(64)
+  }
+
+  entity "<U+0020><color:red>**word_from** " as word_from <<morphological>> {
+    id: INT <<PK>>
+    <color:#gray>lexeme_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**lemma_form_representation** " as lemma_form_representation <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>lexeme_id: INT <<FK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**form_representation_measure** " as form_representation_measure <<morphological>> {
+    id: INT <<PK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+    <color:#gray>corpus_id: INT <<FK>>
+    <color:#gray>measure_id: INT <<FK>>
+    --
+    value: FLOAT
+  }
+
+  form_encoding }|-up-o| form_encoding_script
+  form_encoding }|--|| form_representation
+
+  form_pattern }|-right-|| form_pattern_system
+
+  form_representation_pattern }|-up-|| form_pattern
+  form_representation_pattern }|--|| form_representation
+
+  form_representation_relation }|-up-|| form_representation_relation_type
+  form_representation_relation }|--|| form_representation
+  form_representation_relation }|--|| form_representation
+
+  form_representation }|--o| form_representation_norm_status
+  form_representation }|--|| form_representation_type
+  form_representation }|--|| word_from
+
+  lexeme }|-up-|| category
+
+  word_from }|-up-|| lexeme
+
+  lemma_form_representation }|-left-|| form_representation
+  lemma_form_representation }|-right-|| lexeme
+
+  form_representation_measure }|--|| form_representation
+}
+
+rectangle "<color:#b30000>sense translations" <<multilingual>> {
+  entity "<U+0020>**sense_example_translation** " as sense_example_translation <<multilingual>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_example_id: INT <<FK>>
+    <color:#gray>translation_id: INT <<FK>>
+  }
+
+  entity "**translation**" as translation <<multilingual>> {
+    id: INT <<PK>>
+    <color:#gray>language_id: INT <<FK>>
+    --
+    translation: VARCHAR(45)
+  }
+
+  entity "**language**" as language <<multilingual>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "**explanation**" as explanation <<multilingual>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>translation_id: INT <<FK>>
+    <color:#gray>language_id: INT: <<FK>>
+    --
+    explanation: VARCHAR(45)
+  }
+
+  entity "**external_source**" as external_source <<multilingual>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+    url_template: VARCHAR(45)
+  }
+
+  entity "<U+0020>**translation_external_source** " as translation_external_source <<multilingual>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>translation_id: INT <<FK>>
+    <color:#gray>external_source_id: INT <<FK>>
+    --
+    external_source_key: VARCHAR(45)
+  }
+
+  entity "**sense_translation**" as sense_translation <<multilingual>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_id: INT <<FK>>
+    <color:#gray>translation_id: INT <<FK>>
+  }
+
+  sense_example_translation }|-right-|| translation
+  translation }|-down-|| language
+  explanation }|-up-|| translation
+  explanation }|-left-|| language
+  translation_external_source }|--|| external_source
+  translation_external_source }|--|| translation
+  sense_translation }|--|| translation
+  sense_translation }|..|| sense
+}
+
+entity "<U+0020>**resource_relevance** " as resource_relevance {
+  id: INT <<PK>>
+  <color:#gray>resource_id: INT <<FK>>
+  <color:#gray>headword_id: INT <<FK>>
+  <color:#gray>inclusion_id: INT
+  <color:#gray>status_id: INT
+  --
+  <color:red>object_id: INT
+  <color:red>content_type_id: INT
+}
+
+rectangle "<color:#e65c00>resource connections" <<connections>> {
+  entity "**status**" as status <<connections>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "**resource**" as resource <<connections>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "**resource_status**" as resource_status <<connections>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>resource_id: INT <<FK>>
+    <color:#gray>status_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**resource_language** " as resource_language <<connections>> {
+    id: INT <<PK>>
+    <color:#gray>resource_id: INT <<FK>>
+    <color:#gray>language_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**resource_relevance_inclusion** " as resource_relevance_inclusion <<connections>> {
+    id: INT <<PK>>
+    name: VARCHAR(45)
+  }
+
+  entity "**resource_relevance_status**" as resource_relevance_status <<connections>> {
+    id: INT <<PK>>
+    name: VARCHAR(45)
+  }
+
+  entity "**lexical_unit_status**" as lexical_unit_status <<connections>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>lexical_unit_id: INT <<FK>>
+    <color:#gray>resource_status_id: INT <<FK>>
+  }
+
+  resource_status }|-right-|| status
+  resource_status }|--|| resource
+  resource_language }|..|| language
+  resource_language }|--|| resource
+  lexical_unit_status }|--|| resource_status
+  lexical_unit_status }|..|| lexical_unit
+}
+
+sense_frame }|..|| sense
+
+sense_measure }|..|| measure
+sense_measure }|..|| corpus
+
+sense }|..|| lexical_unit
+
+sense_part }|..|| lexical_unit_part
+
+lexical_unit_part }|..|| structure_component
+lexical_unit_part }|..|| form_encoding
+
+lexical_unit }|..|| syntactic_structure
+
+sense_example }|..|| sense
+
+form_representation_measure }|..|| corpus
+form_representation_measure }|..|| measure
+
+sense_example_translation }|..|| sense_example
+
+sense_example_token }|..|| sense_part
+
+resource_relevance }|..|| resource_relevance_inclusion
+resource_relevance }|..|| resource_relevance_status
+resource_relevance }|..|| resource
+resource_relevance }|..|| lexical_unit
+
+@enduml

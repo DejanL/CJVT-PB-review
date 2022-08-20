@@ -1,0 +1,198 @@
+@startuml ER
+
+skinparam class {
+  backgroundColor white
+  backgroundColor<<sense>> #e8f5fc
+  backgroundColor<<sense_frame>> #f9ecf9
+  backgroundColor<<lexical_unit>> #f9ffe6
+  backgroundColor<<syntactic_structure>> #f9f2ec
+  backgroundColor<<morphological>> #e6ffe6
+  backgroundColor<<example>> #ffffe6
+  backgroundColor<<feature>> #f2f2f2
+  backgroundColor<<multilingual>> #ffe6e6
+  backgroundColor<<connections>> #fff0e6
+  borderColor black
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+  arrowColor black
+}
+
+skinparam rectangle {
+  backgroundColor white
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+}
+
+skinparam backgroundcolor transparent
+'left to right direction
+hide circle
+hide stereotype
+'hide members
+
+
+rectangle "<color:#00b300>word forms" <<morphological>> {
+  entity "<U+0020>**form_encoding** " as form_encoding <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+    <color:#gray>script_id: INT <<FK>>
+    --
+    text: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_encoding_script** " as form_encoding_script <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_pattern_system** " as form_pattern_system <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_pattern** " as form_pattern <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>system_id: INT <<FK>>
+    --
+    code: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_representation_pattern** " as form_representation_pattern <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+    <color:#gray>pattern_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**form_representation_norm_status** " as form_representation_norm_status <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_representation_relation_type** " as form_representation_relation_type <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**form_representation** " as form_representation <<morphological>> {
+    id: INT <<PK>>
+    <color:#gray>word_form_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+    <color:#gray>norm_status_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**form_representation_relation** " as form_representation_relation <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+    <color:#gray>to_representation_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**form_representation_type** " as form_representation_type <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+    subtype: VARCHAR(45)
+  }
+
+  entity "<U+0020>**category** " as category <<morphological>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(64)
+  }
+
+  entity "<U+0020>**lexeme** " as lexeme <<morphological>> {
+    id: INT <<PK>>
+    <color:#gray>category_id: INT <<FK>>
+    --
+    lemma: VARCHAR(64)
+  }
+
+  entity "<U+0020><color:red>**word_from** " as word_from <<morphological>> {
+    id: INT <<PK>>
+    <color:#gray>lexeme_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**lemma_form_representation** " as lemma_form_representation <<morphological>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>lexeme_id: INT <<FK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**form_representation_measure** " as form_representation_measure <<morphological>> {
+    id: INT <<PK>>
+    <color:#gray>form_representation_id: INT <<FK>>
+    <color:#gray>corpus_id: INT <<FK>>
+    <color:#gray>measure_id: INT <<FK>>
+    --
+    value: FLOAT
+  }
+
+  form_encoding }|-up-o| form_encoding_script
+  form_encoding }|--|| form_representation
+
+  form_pattern }|-right-|| form_pattern_system
+
+  form_representation_pattern }|-up-|| form_pattern
+  form_representation_pattern }|--|| form_representation
+
+  form_representation_relation }|-up-|| form_representation_relation_type
+  form_representation_relation }|--|| form_representation
+  form_representation_relation }|--|| form_representation
+
+  form_representation }|--o| form_representation_norm_status
+  form_representation }|--|| form_representation_type
+  form_representation }|--|| word_from
+
+  lexeme }|-up-|| category
+
+  word_from }|-up-|| lexeme
+
+  lemma_form_representation }|-left-|| form_representation
+  lemma_form_representation }|-right-|| lexeme
+
+  form_representation_measure }|--|| form_representation
+}
+
+entity "<U+0020>**lexical_unit_part** " as lexical_unit_part <<lexical_unit>> {
+  id: INT <<PK>>
+  <color:#gray>lexical_unit_id: INT <<FK>>
+  <color:#gray>structure_component_id: INT <<FK>>
+  <color:#gray>form_encoding_id: INT <<FK>>
+}
+
+entity "<U+0020>**corpus** " as corpus <<example>> {
+  id: INT <<PK>>
+  --
+  name: VARCHAR(64)
+  version: VARCHAR(45)
+}
+
+entity "<U+0020>**measure** " as measure <<feature>> {
+  id: INT <<PK>>
+  --
+  name: VARCHAR(45)
+}
+
+lexical_unit_part }|..|| form_encoding
+
+form_representation_measure }|.right.|| corpus
+form_representation_measure }|..|| measure
+
+@enduml

@@ -1,0 +1,158 @@
+@startuml ER
+
+skinparam class {
+  backgroundColor white
+  backgroundColor<<sense>> #e8f5fc
+  backgroundColor<<sense_frame>> #f9ecf9
+  backgroundColor<<lexical_unit>> #f9ffe6
+  backgroundColor<<syntactic_structure>> #f9f2ec
+  backgroundColor<<morphological>> #e6ffe6
+  backgroundColor<<example>> #ffffe6
+  backgroundColor<<feature>> #f2f2f2
+  backgroundColor<<multilingual>> #ffe6e6
+  backgroundColor<<connections>> #fff0e6
+  borderColor black
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+  arrowColor black
+}
+
+skinparam rectangle {
+  backgroundColor white
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+}
+
+skinparam backgroundcolor transparent
+'left to right direction
+hide circle
+hide stereotype
+'hide members
+
+rectangle "<color:#cccc00>corpus examples" <<example>> {
+  
+  entity "<U+0020>**corpus** " as corpus <<example>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(64)
+    version: VARCHAR(45)
+  }
+
+  entity "<U+0020>**example_relation_type** " as example_relation_type <<example>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<color:red><U+0020>**example** " as example <<example>> {
+    id: INT <<PK>>
+    <color:#gray>corpus_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**example_relation** " as example_relation <<example>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>from_example_id: INT <<FK>>
+    <color:#gray>to_example_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**example_sentence** " as example_sentence <<example>> {
+    id: INT <<PK>>
+    <color:#gray>example_id: INT <<FK>>
+    --
+    <color:#red>corpus_sentence_id: VARCHAR(45)
+    position: INT
+  }
+
+  entity "<U+0020>**sense_example** " as sense_example <<example>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_id: INT <<FK>>
+    <color:#gray>example_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**sense_example_token** " as sense_example_token <<example>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>sense_part_id: INT <<FK>>
+    <color:#gray>sense_example_id: INT <<FK>>
+    --
+    position: INT
+  }
+
+  example }|--|| corpus
+
+  example_relation }|--|| example_relation_type
+  example_relation }|--|| example
+  example_relation }|--|| example
+
+  example_sentence }|--|| example
+
+  sense_example }|--|| example
+
+  sense_example_token }|-up-|| sense_example
+
+}
+
+entity "<U+0020>**sense_part** " as sense_part <<sense>> {
+  id: INT <<PK>>
+  <color:#gray>sense_id: INT <<FK>>
+  <color:#gray>lexical_unit_id: INT <<FK>>
+  <color:#gray>type_id: INT <<FK>>
+  <color:#gray>role_id: INT <<FK>>
+}
+
+entity "<U+0020>**sense_example_translation** " as sense_example_translation <<multilingual>> {
+  id: INT <<PK>>
+  <color:#gray>sense_example_id: INT <<FK>>
+  <color:#gray>translation_id: INT <<FK>>
+}
+
+entity "<U+0020>**sense** " as sense <<sense>> {
+  id: INT <<PK>>
+  <color:#gray>lexical_unit_id: INT <<FK>>
+  --
+  position: INT
+}
+
+entity "<U+0020>**sense_measure** " as sense_measure <<sense>> {
+  id: INT <<PK>>
+  <color:#gray>sense_id: INT <<FK>>
+  <color:#gray>corpus_id: INT <<FK>>
+  <color:#gray>measure_id: INT <<FK>>
+  --
+  value: FLOAT
+}
+
+entity "<U+0020>**form_representation_measure** " as form_representation_measure <<morphological>> {
+  id: INT <<PK>>
+  <color:#gray>form_representation_id: INT <<FK>>
+  <color:#gray>corpus_id: INT <<FK>>
+  <color:#gray>measure_id: INT <<FK>>
+  --
+  value: FLOAT
+}
+
+sense_measure }|.up.|| corpus
+
+sense_example }|.right.|| sense
+
+form_representation_measure }|.up.|| corpus
+
+sense_example_translation }|..|| sense_example
+
+sense_example_token }|.right.|| sense_part
+
+@enduml

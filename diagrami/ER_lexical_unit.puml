@@ -1,0 +1,163 @@
+@startuml ER
+
+skinparam class {
+  backgroundColor white
+  backgroundColor<<sense>> #e8f5fc
+  backgroundColor<<sense_frame>> #f9ecf9
+  backgroundColor<<lexical_unit>> #f9ffe6
+  backgroundColor<<syntactic_structure>> #f9f2ec
+  backgroundColor<<morphological>> #e6ffe6
+  backgroundColor<<example>> #ffffe6
+  backgroundColor<<feature>> #f2f2f2
+  backgroundColor<<multilingual>> #ffe6e6
+  backgroundColor<<connections>> #fff0e6
+  borderColor black
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+  arrowColor black
+}
+
+skinparam rectangle {
+  backgroundColor white
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+}
+
+skinparam backgroundcolor transparent
+'left to right direction
+hide circle
+hide stereotype
+'hide members
+
+
+rectangle "<color:#9ccc00>lexical unit" <<lexical_unit>> {
+
+  entity "<U+0020>**lexical_unit** " as lexical_unit <<lexical_unit>> {
+    <color:#red>id: INT <<PK>>
+    <color:#gray>syntactic_structure_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**lexical_unit_type** " as lexical_unit_type <<lexical_unit>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**lexical_unit_part** " as lexical_unit_part <<lexical_unit>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>lexical_unit_id: INT <<FK>>
+    <color:#gray>structure_component_id: INT <<FK>>
+    <color:#gray>form_encoding_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**lexicon** " as lexicon <<lexical_unit>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(64)
+    version: VARCHAR(64)
+  }
+
+  entity "<U+0020>**lexicon_lexical_unit** " as lexicon_lexical_unit <<lexical_unit>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>lexicon_id: INT <<FK>>
+    <color:#gray>lexical_unit_id: INT <<FK>>
+  }
+
+  entity "<U+0020>**lexical_unit_relation_type** " as lexical_unit_relation_type <<lexical_unit>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**lexical_unit_relation** " as lexical_unit_relation <<lexical_unit>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>from_lexical_unit_id: INT <<FK>>
+    <color:#gray>to_lexical_unit_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+  
+  lexical_unit_part }|--|| lexical_unit
+
+  lexical_unit }|-right-|| lexical_unit_type
+
+  lexicon_lexical_unit }|-up-|| lexicon
+  lexicon_lexical_unit }|--|| lexical_unit
+
+  lexical_unit_relation }|-up-|| lexical_unit_relation_type
+  lexical_unit_relation }|--|| lexical_unit
+  lexical_unit_relation }|--|| lexical_unit
+
+}
+
+entity "<U+0020>**sense** " as sense <<sense>> {
+  id: INT <<PK>>
+  <color:#gray>lexical_unit_id: INT <<FK>>
+  --
+  position: INT
+}
+
+entity "<U+0020>**resource_relevance** " as resource_relevance {
+  id: INT <<PK>>
+  <color:#gray>resource_id: INT <<FK>>
+  <color:#gray>headword_id: INT <<FK>>
+  <color:#gray>inclusion_id: INT
+  <color:#gray>status_id: INT
+  --
+  object_id: INT
+  content_type_id: INT
+}
+
+entity "<U+0020>**syntactic_structure** " as syntactic_structure <<syntactic_structure>> {
+  id: INT <<PK>>
+}
+
+entity "<U+0020>**sense_part** " as sense_part <<sense>> {
+  id: INT <<PK>>
+  <color:#gray>sense_id: INT <<FK>>
+  <color:#gray>lexical_unit_id: INT <<FK>>
+  <color:#gray>type_id: INT <<FK>>
+  <color:#gray>role_id: INT <<FK>>
+}
+
+entity "<U+0020>**form_encoding** " as form_encoding <<morphological>> {
+  id: INT <<PK>>
+  <color:#gray>form_representation_id: INT <<FK>>
+  <color:#gray>script_id: INT <<FK>>
+  --
+  text: VARCHAR(45)
+}
+
+entity "<U+0020>**structure_component** " as structure_component <<syntactic_structure>> {
+  id: INT <<PK>>
+  <color:#gray>structure_id: INT <<FK>>
+  --
+  index: INT
+}
+
+sense }|.up.|| lexical_unit
+
+sense_part }|..|| lexical_unit_part
+
+lexical_unit_part }|.right.|| structure_component
+lexical_unit_part }|..|| form_encoding
+
+lexical_unit }|..|| syntactic_structure
+
+resource_relevance }|.up.|| lexical_unit
+
+@enduml

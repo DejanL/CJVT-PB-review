@@ -1,0 +1,92 @@
+@startuml ER
+
+skinparam class {
+  backgroundColor white
+  backgroundColor<<sense>> #e8f5fc
+  backgroundColor<<sense_frame>> #f9ecf9
+  backgroundColor<<lexical_unit>> #f9ffe6
+  backgroundColor<<syntactic_structure>> #f9f2ec
+  backgroundColor<<morphological>> #e6ffe6
+  backgroundColor<<example>> #ffffe6
+  backgroundColor<<feature>> #f2f2f2
+  backgroundColor<<multilingual>> #ffe6e6
+  backgroundColor<<connections>> #fff0e6
+  borderColor black
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+  arrowColor black
+}
+
+skinparam rectangle {
+  backgroundColor white
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+}
+
+skinparam backgroundcolor transparent
+'left to right direction
+hide circle
+hide stereotype
+'hide members
+
+entity "<U+0020>**object_feature** " as object_feature {
+    id: INT <<PK>>
+    <color:#gray>value_id: INT <<FK>>
+    --
+    <color:#red>object_id: INT
+    <color:#red>content_type_id: INT
+  }
+
+entity "<U+0020>**resource_relevance** " as resource_relevance {
+  id: INT <<PK>>
+  <color:#gray>resource_id: INT <<FK>>
+  <color:#gray>headword_id: INT <<FK>>
+  <color:#gray>inclusion_id: INT
+  <color:#gray>status_id: INT
+  --
+  <color:red>object_id: INT
+  <color:red>content_type_id: INT
+}
+
+entity "<U+0020>**resource_relevance_inclusion** " as resource_relevance_inclusion <<connections>> {
+  id: INT <<PK>>
+  name: VARCHAR(45)
+}
+
+entity "**resource_relevance_status**" as resource_relevance_status <<connections>> {
+  id: INT <<PK>>
+  name: VARCHAR(45)
+}
+
+entity "**resource**" as resource <<connections>> {
+  id: INT <<PK>>
+  --
+  name: VARCHAR(45)
+}
+
+entity "<U+0020>**lexical_unit** " as lexical_unit <<lexical_unit>> {
+  id: INT <<PK>>
+  <color:#gray>syntactic_structure_id: INT <<FK>>
+  <color:#gray>type_id: INT <<FK>>
+}
+
+resource_relevance }|..|| resource_relevance_inclusion
+resource_relevance }|..|| resource_relevance_status
+resource_relevance }|..|| resource
+resource_relevance }|..|| lexical_unit
+
+@enduml

@@ -1,0 +1,95 @@
+@startuml ER
+
+skinparam class {
+  backgroundColor white
+  backgroundColor<<sense>> #e8f5fc
+  backgroundColor<<sense_frame>> #f9ecf9
+  backgroundColor<<lexical_unit>> #f9ffe6
+  backgroundColor<<syntactic_structure>> #f9f2ec
+  backgroundColor<<morphological>> #e6ffe6
+  backgroundColor<<example>> #ffffe6
+  backgroundColor<<feature>> #f2f2f2
+  backgroundColor<<multilingual>> #ffe6e6
+  backgroundColor<<connections>> #fff0e6
+  borderColor black
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+  arrowColor black
+}
+
+skinparam rectangle {
+  backgroundColor white
+  borderColor<<sense>> #5FB8EC
+  borderColor<<sense_frame>> #d477d4
+  borderColor<<lexical_unit>> #9ccc00
+  borderColor<<syntactic_structure>> #996633
+  borderColor<<morphological>> #00b300
+  borderColor<<example>> #cccc00
+  borderColor<<feature>> #737373
+  borderColor<<multilingual>> #b30000
+  borderColor<<connections>> #e65c00
+}
+
+skinparam backgroundcolor transparent
+'left to right direction
+hide circle
+hide stereotype
+'hide members
+
+rectangle "<color:#996633>syntactic structure" <<syntactic_structure>> {
+  entity "<color:red><U+0020>**syntactic_structure** " as syntactic_structure <<syntactic_structure>> {
+    id: INT <<PK>>
+  }
+
+  entity "<U+0020>**structure_component** " as structure_component <<syntactic_structure>> {
+    id: INT <<PK>>
+    <color:#gray>structure_id: INT <<FK>>
+    --
+    index: INT
+  }
+
+  entity "<U+0020>**structure_relation_type** " as structure_relation_type <<syntactic_structure>> {
+    id: INT <<PK>>
+    --
+    name: VARCHAR(45)
+  }
+
+  entity "<U+0020>**structure_relation** " as structure_relation <<syntactic_structure>> {
+    <color:red>id: INT <<PK>>
+    <color:#gray>from_structure_id: INT <<FK>>
+    <color:#gray>to_structure_id: INT <<FK>>
+    <color:#gray>type_id: INT <<FK>>
+  }
+
+  structure_component }|--|| syntactic_structure
+
+  structure_relation }|--|| structure_relation_type
+  structure_relation }|--|| syntactic_structure
+  structure_relation }|--|| syntactic_structure
+}
+
+entity "<U+0020>**lexical_unit** " as lexical_unit <<lexical_unit>> {
+  id: INT <<PK>>
+  <color:#gray>syntactic_structure_id: INT <<FK>>
+  <color:#gray>type_id: INT <<FK>>
+}
+
+entity "<U+0020>**lexical_unit_part** " as lexical_unit_part <<lexical_unit>> {
+  id: INT <<PK>>
+  <color:#gray>lexical_unit_id: INT <<FK>>
+  <color:#gray>structure_component_id: INT <<FK>>
+  <color:#gray>form_encoding_id: INT <<FK>>
+}
+
+lexical_unit_part }|..|| structure_component
+
+lexical_unit }|.up.|| syntactic_structure
+
+@enduml
